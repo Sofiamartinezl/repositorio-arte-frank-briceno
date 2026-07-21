@@ -1,0 +1,2364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repositorio de Arte — Frank Briceño</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #0A0A0A;
+      --white:    #FFFFFF;
+      --gray-50:  #FAFAFA;
+      --gray-100: #F4F4F4;
+      --gray-200: #E8E8E8;
+      --gray-300: #D0D0D0;
+      --gray-400: #9A9A9A;
+      --gray-600: #5A5A5A;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      --transition: 0.18s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      min-height: 100vh;
+      font-size: 13px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--gray-100); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); }
+
+    /* ── Header ── */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 48px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .header-left { display: flex; align-items: baseline; gap: 16px; }
+    header h1 { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+    #obra-count { font-size: 11px; color: var(--gray-400); font-weight: 300; letter-spacing: 0.04em; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px;
+      font-family: var(--font); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid transparent;
+      transition: background var(--transition), color var(--transition), border-color var(--transition), opacity var(--transition);
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--black); color: var(--white); border-color: var(--black); }
+    .btn-primary:hover { opacity: 0.72; }
+    .btn-ghost { background: transparent; color: var(--black); border-color: var(--gray-300); }
+    .btn-ghost:hover { border-color: var(--black); }
+    .btn-danger { background: transparent; color: var(--black); border-color: var(--gray-300); }
+    .btn-danger:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+    /* ── Filters ── */
+    .filters {
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 48px; height: 52px;
+      display: flex; align-items: center; gap: 32px;
+      background: var(--white); overflow-x: auto;
+    }
+    .filter-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400); }
+    .filter-select {
+      border: 1px solid var(--gray-200); background: var(--white);
+      padding: 6px 28px 6px 10px; font-family: var(--font); font-size: 12px; color: var(--black);
+      cursor: pointer; appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239A9A9A'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 9px center;
+      transition: border-color var(--transition); min-width: 148px;
+    }
+    .filter-select:focus { outline: none; border-color: var(--black); }
+    .filter-divider { width: 1px; height: 20px; background: var(--gray-200); }
+    .btn-reset { background: transparent; border: none; font-family: var(--font); font-size: 11px; color: var(--gray-400); cursor: pointer; letter-spacing: 0.06em; padding: 0; transition: color var(--transition); flex-shrink: 0; }
+    .btn-reset:hover { color: var(--black); }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; flex-shrink: 0; }
+    .search-wrap svg { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    #search-input {
+      border: 1px solid var(--gray-200); background: var(--white);
+      padding: 6px 10px 6px 30px; font-family: var(--font); font-size: 12px; color: var(--black);
+      width: 180px; transition: border-color var(--transition);
+    }
+    #search-input:focus { outline: none; border-color: var(--black); }
+    #search-input::placeholder { color: var(--gray-400); }
+
+    /* ── Gallery ── */
+    #gallery {
+      padding: 40px 48px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px; background: var(--gray-200);
+    }
+    .artwork-card {
+      background: var(--white); cursor: pointer; overflow: hidden;
+      transition: outline var(--transition);
+      outline: 2px solid transparent; outline-offset: -2px; position: relative;
+    }
+    .artwork-card:hover { outline-color: var(--black); z-index: 1; }
+    .card-img-wrap {
+      width: 100%; aspect-ratio: 4 / 3; background: var(--gray-100);
+      overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s ease; }
+    .artwork-card:hover .card-img-wrap img { transform: scale(1.03); }
+    .card-no-img { font-size: 11px; letter-spacing: 0.08em; color: var(--gray-300); text-transform: uppercase; font-weight: 500; }
+    .card-type-badge {
+      position: absolute; top: 10px; left: 10px;
+      background: var(--white); color: var(--black);
+      font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 7px; border: 1px solid var(--gray-200);
+    }
+    .card-info { padding: 16px 18px 18px; border-top: 1px solid var(--gray-200); }
+    .card-nombre { font-size: 14px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { font-size: 11px; color: var(--gray-400); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .card-meta span + span::before { content: '·'; margin-right: 8px; }
+
+    /* ── Empty State ── */
+    #empty-state {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      padding: 100px 48px; text-align: center; grid-column: 1 / -1; background: var(--white);
+    }
+    #empty-state h2 { font-size: 16px; font-weight: 400; margin-bottom: 8px; }
+    #empty-state p { font-size: 12px; color: var(--gray-400); margin-bottom: 24px; }
+
+    /* ── Modal base ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+      backdrop-filter: blur(2px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--white); width: 100%; max-width: 680px; max-height: 92vh;
+      overflow-y: auto; position: relative; display: flex; flex-direction: column;
+    }
+    .modal-header {
+      padding: 24px 28px 20px; border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: var(--white); z-index: 10;
+    }
+    .modal-header h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+    .modal-close {
+      background: transparent; border: none; cursor: pointer; color: var(--gray-400);
+      padding: 4px; display: flex; align-items: center; justify-content: center; transition: color var(--transition);
+    }
+    .modal-close:hover { color: var(--black); }
+    .modal-body { padding: 28px; flex: 1; }
+    .modal-footer {
+      padding: 20px 28px; border-top: 1px solid var(--gray-200);
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      position: sticky; bottom: 0; background: var(--white);
+    }
+    .modal-footer-right { display: flex; gap: 10px; align-items: center; }
+
+    /* ── Form ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-600); }
+    .form-control {
+      border: 1px solid var(--gray-200); background: var(--white);
+      padding: 9px 11px; font-family: var(--font); font-size: 13px; color: var(--black);
+      transition: border-color var(--transition); width: 100%;
+    }
+    .form-control:focus { outline: none; border-color: var(--black); }
+    .form-control::placeholder { color: var(--gray-300); }
+    textarea.form-control { resize: vertical; min-height: 80px; line-height: 1.6; }
+    select.form-control {
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239A9A9A'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer;
+    }
+
+    /* ── Image Upload ── */
+    .img-upload-area {
+      border: 1px dashed var(--gray-300); padding: 20px; text-align: center;
+      cursor: pointer; transition: border-color var(--transition), background var(--transition); position: relative;
+    }
+    .img-upload-area:hover { border-color: var(--black); background: var(--gray-50); }
+    .img-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .img-upload-area p { font-size: 11px; color: var(--gray-400); pointer-events: none; }
+    .img-upload-area span { font-size: 11px; font-weight: 500; text-decoration: underline; color: var(--black); }
+    .img-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .img-preview-item { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .img-preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .img-preview-item button {
+      position: absolute; top: -5px; right: -5px; width: 18px; height: 18px;
+      background: var(--black); color: var(--white); border: none; cursor: pointer;
+      font-size: 11px; display: flex; align-items: center; justify-content: center; line-height: 1;
+    }
+    .img-main-badge {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.55); color: var(--white);
+      font-size: 8px; font-weight: 600; letter-spacing: 0.08em;
+      text-align: center; padding: 2px 0; text-transform: uppercase;
+    }
+
+    /* ── Detail Modal ── */
+    .detail-modal { max-width: 860px; }
+    .detail-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .detail-img-col { background: var(--gray-100); position: relative; min-height: 300px; display: flex; flex-direction: column; }
+    .detail-main-img { width: 100%; flex: 1; object-fit: cover; display: block; min-height: 300px; max-height: 520px; object-fit: contain; background: var(--gray-100); }
+    .detail-thumbs {
+      display: flex; gap: 4px; padding: 8px; background: var(--white);
+      border-top: 1px solid var(--gray-200); overflow-x: auto;
+    }
+    .detail-thumb {
+      width: 48px; height: 48px; object-fit: cover; cursor: pointer; flex-shrink: 0;
+      opacity: 0.55; border: 2px solid transparent; transition: opacity var(--transition), border-color var(--transition);
+    }
+    .detail-thumb.active { opacity: 1; border-color: var(--black); }
+    .detail-info-col { padding: 28px 32px; overflow-y: auto; }
+    .detail-tipo { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
+    .detail-nombre { font-size: 20px; font-weight: 500; line-height: 1.3; margin-bottom: 20px; }
+    .detail-fields { display: flex; flex-direction: column; gap: 14px; }
+    .detail-field label { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-400); display: block; margin-bottom: 3px; }
+    .detail-field p { font-size: 13px; color: var(--black); line-height: 1.55; }
+    .detail-divider { height: 1px; background: var(--gray-200); margin: 16px 0; }
+
+    /* ── Confirm Modal ── */
+    .confirm-modal { max-width: 400px; }
+    .confirm-modal .modal-body { padding: 28px; text-align: center; }
+    .confirm-modal h3 { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+    .confirm-modal p { font-size: 12px; color: var(--gray-600); margin-bottom: 4px; }
+
+    /* ── Notification ── */
+    #notification {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--black); color: var(--white);
+      padding: 12px 20px; font-size: 12px; font-weight: 400; letter-spacing: 0.04em;
+      z-index: 9999; transform: translateY(120%); opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    #notification.show { transform: translateY(0); opacity: 1; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      header { padding: 0 20px; }
+      .filters { padding: 0 20px; gap: 16px; }
+      #gallery { padding: 20px 0; grid-template-columns: 1fr 1fr; }
+      .detail-layout { grid-template-columns: 1fr; }
+      .detail-img-col { min-height: 220px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .modal { max-width: 100%; max-height: 100dvh; }
+    }
+    @media (max-width: 480px) { #gallery { grid-template-columns: 1fr; } }
+
+    /* ── Login Overlay ── */
+    #login-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.25s ease;
+    }
+    #login-overlay.hidden { display: none; }
+    .login-box {
+      width: 340px;
+      display: flex; flex-direction: column; gap: 28px;
+      padding: 0 8px;
+    }
+    .login-title { text-align: center; }
+    .login-title h2 {
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--black);
+    }
+    .login-title p {
+      font-size: 11px; color: var(--gray-400);
+      margin-top: 6px; letter-spacing: 0.05em;
+    }
+    .login-rule { width: 32px; height: 1px; background: var(--gray-200); margin: 0 auto; }
+    .login-fields { display: flex; flex-direction: column; gap: 14px; }
+    .login-field { display: flex; flex-direction: column; gap: 6px; }
+    .login-field label {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-400);
+    }
+    .login-field input {
+      border: 1px solid var(--gray-200); background: var(--white);
+      padding: 10px 12px; font-family: var(--font); font-size: 13px; color: var(--black);
+      outline: none; transition: border-color var(--transition);
+    }
+    .login-field input:focus { border-color: var(--black); }
+    .login-submit {
+      width: 100%; padding: 12px;
+      background: var(--black); color: var(--white); border: none;
+      font-family: var(--font); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: opacity var(--transition);
+    }
+    .login-submit:hover { opacity: 0.72; }
+    .login-error {
+      font-size: 11px; color: #b33; text-align: center;
+      letter-spacing: 0.04em; min-height: 16px; margin-top: 8px;
+    }
+    /* ── Logout button ── */
+    #btn-logout {
+      font-size: 10px; letter-spacing: 0.09em;
+      color: var(--gray-400); border-color: transparent;
+      padding: 9px 14px;
+    }
+    #btn-logout:hover { color: var(--black); border-color: var(--gray-300); }
+  </style>
+</head>
+<body>
+
+<!-- ── Login Overlay ── -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-title">
+      <h2>Repositorio de Arte</h2>
+      <p>Frank Briceño</p>
+    </div>
+    <div class="login-rule"></div>
+    <div class="login-fields">
+      <div class="login-field">
+        <label for="login-user">Usuario</label>
+        <input type="text" id="login-user" placeholder="usuario" autocomplete="username" />
+      </div>
+      <div class="login-field">
+        <label for="login-pass">Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+    </div>
+    <div>
+      <button class="login-submit" id="login-btn">Entrar</button>
+      <p class="login-error" id="login-error"></p>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="header-left" style="flex-direction:column;align-items:flex-start;gap:3px;">
+    <div style="display:flex;align-items:baseline;gap:16px;">
+      <h1>Repositorio de Arte</h1>
+      <span id="obra-count"></span>
+    </div>
+    <span style="font-size:11px;font-weight:300;color:var(--gray-400);letter-spacing:0.06em;">Frank Briceño</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button class="btn btn-primary" id="btn-nueva-obra">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+        <line x1="5.5" y1="0" x2="5.5" y2="11" stroke="white" stroke-width="1.5"/>
+        <line x1="0" y1="5.5" x2="11" y2="5.5" stroke="white" stroke-width="1.5"/>
+      </svg>
+      Nueva Obra
+    </button>
+    <button class="btn btn-logout" id="btn-logout" title="Cerrar sesión">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 1H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M9 9.5l3-3-3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="12" y1="6.5" x2="5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Salir
+    </button>
+  </div>
+</header>
+
+<div class="filters">
+  <span class="filter-label">Filtrar</span>
+  <select class="filter-select" id="f-tipo">
+    <option value="">Tipo — Todos</option>
+    <option value="Cuadro">Cuadro</option>
+    <option value="Escultura">Escultura</option>
+    <option value="Técnica mixta">Técnica mixta</option>
+    <option value="Dibujo">Dibujo</option>
+    <option value="Fotografía">Fotografía</option>
+    <option value="Grabado">Grabado</option>
+    <option value="Otro">Otro</option>
+  </select>
+  <select class="filter-select" id="f-material">
+    <option value="">Material — Todos</option>
+  </select>
+  <select class="filter-select" id="f-artista">
+    <option value="">Artista — Todos</option>
+  </select>
+  <select class="filter-select" id="f-coleccion-filter">
+    <option value="">Colección — Todas</option>
+  </select>
+  <div class="filter-divider"></div>
+  <div class="search-wrap">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <circle cx="5" cy="5" r="4" stroke="#9A9A9A" stroke-width="1.2"/>
+      <line x1="8.2" y1="8.2" x2="11" y2="11" stroke="#9A9A9A" stroke-width="1.2"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="Buscar obra…" />
+  </div>
+  <button class="btn-reset" id="btn-reset-filters">Limpiar filtros</button>
+</div>
+
+<div id="gallery">
+  <div id="empty-state">
+    <h2>No hay obras registradas</h2>
+    <p>Agrega tu primera obra para comenzar el repositorio.</p>
+    <button class="btn btn-primary" id="btn-empty-add">Nueva Obra</button>
+  </div>
+</div>
+
+<!-- MODAL: Nueva / Editar Obra -->
+<div class="modal-overlay" id="modal-form">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="form-modal-title">Nueva Obra</h2>
+      <button class="modal-close" data-close="modal-form">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <line x1="1" y1="1" x2="15" y2="15" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="15" y1="1" x2="1" y2="15" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="obra-form" novalidate>
+        <input type="hidden" id="obra-id" />
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="f-nombre">Nombre de la obra *</label>
+            <input type="text" class="form-control" id="f-nombre" placeholder="Título de la obra" required />
+          </div>
+          <div class="form-group">
+            <label for="f-artista-input">Artista *</label>
+            <input type="text" class="form-control" id="f-artista-input" placeholder="Nombre del artista" required />
+          </div>
+          <div class="form-group">
+            <label for="f-nacionalidad">Nacionalidad del artista</label>
+            <input type="text" class="form-control" id="f-nacionalidad" placeholder="Ej: Venezolano" />
+          </div>
+          <div class="form-group">
+            <label for="f-tipo-input">Tipo de obra *</label>
+            <select class="form-control" id="f-tipo-input" required>
+              <option value="">Seleccionar tipo</option>
+              <option value="Cuadro">Cuadro</option>
+              <option value="Escultura">Escultura</option>
+              <option value="Técnica mixta">Técnica mixta</option>
+              <option value="Dibujo">Dibujo</option>
+              <option value="Fotografía">Fotografía</option>
+              <option value="Grabado">Grabado</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="f-material-input">Material *</label>
+            <input type="text" class="form-control" id="f-material-input" placeholder="Ej: Óleo sobre lienzo" required />
+          </div>
+          <div class="form-group">
+            <label for="f-medida">Medida</label>
+            <input type="text" class="form-control" id="f-medida" placeholder="Ej: 80 × 60 cm" />
+          </div>
+          <div class="form-group">
+            <label for="f-fecha">Año de creación</label>
+            <input type="number" class="form-control" id="f-fecha" placeholder="Ej: 1992" min="1900" max="2099" />
+          </div>
+          <div class="form-group">
+            <label for="f-coleccion">Colección</label>
+            <input type="text" class="form-control" id="f-coleccion" placeholder="Ej: Caballos" />
+          </div>
+          <div class="form-group full">
+            <label for="f-descripcion">Descripción</label>
+            <textarea class="form-control" id="f-descripcion" placeholder="Notas, contexto o historia de la obra…" rows="4"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Imágenes</label>
+            <div class="img-upload-area" id="upload-area">
+              <input type="file" id="img-input" accept="image/*" multiple />
+              <p><span>Seleccionar imágenes</span> o arrastra aquí</p>
+              <p style="margin-top:4px;font-size:10px;">La primera imagen será la principal.</p>
+            </div>
+            <div class="img-previews" id="img-previews"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="btn-delete-obra" style="display:none">Eliminar obra</button>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost" data-close="modal-form">Cancelar</button>
+        <button class="btn btn-primary" id="btn-save-obra">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Detalle de Obra -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal detail-modal">
+    <div class="modal-header">
+      <h2 id="detail-header-nombre">—</h2>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-ghost" id="btn-edit-from-detail" style="padding:7px 14px">Editar</button>
+        <button class="modal-close" data-close="modal-detail">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <line x1="1" y1="1" x2="15" y2="15" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="15" y1="1" x2="1" y2="15" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body" style="padding:0">
+      <div class="detail-layout">
+        <div class="detail-img-col">
+          <img id="detail-main-img" class="detail-main-img" src="" alt="" style="display:none" />
+          <div id="detail-no-img" style="flex:1;display:flex;align-items:center;justify-content:center;">
+            <span class="card-no-img">Sin imagen</span>
+          </div>
+          <div class="detail-thumbs" id="detail-thumbs" style="display:none"></div>
+        </div>
+        <div class="detail-info-col">
+          <p class="detail-tipo" id="detail-tipo"></p>
+          <h2 class="detail-nombre" id="detail-nombre"></h2>
+          <div class="detail-fields">
+            <div class="detail-field"><label>Artista</label><p id="detail-artista"></p></div>
+            <div class="detail-field" id="detail-nacionalidad-wrap"><label>Nacionalidad del artista</label><p id="detail-nacionalidad"></p></div>
+            <div class="detail-field" id="detail-coleccion-wrap"><label>Colección</label><p id="detail-coleccion"></p></div>
+            <div class="detail-field"><label>Material</label><p id="detail-material"></p></div>
+            <div class="detail-field"><label>Medida</label><p id="detail-medida"></p></div>
+            <div class="detail-field"><label>Año de creación</label><p id="detail-fecha"></p></div>
+            <div class="detail-divider"></div>
+            <div class="detail-field" id="detail-desc-wrap">
+              <label>Descripción</label>
+              <p id="detail-descripcion"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmar eliminación -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal confirm-modal">
+    <div class="modal-body">
+      <h3>¿Eliminar esta obra?</h3>
+      <p>Esta acción no se puede deshacer.</p>
+      <p id="confirm-obra-nombre" style="font-weight:500;margin-top:4px;"></p>
+    </div>
+    <div class="modal-footer" style="justify-content:center;gap:12px;">
+      <button class="btn btn-ghost" data-close="modal-confirm">Cancelar</button>
+      <button class="btn btn-primary" id="btn-confirm-delete">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div id="notification"></div>
+
+<script>
+/* ================================================================
+   AUTH — Login / Logout
+   Para cambiar las credenciales, edita AUTH_USER y AUTH_PASS.
+================================================================ */
+const AUTH_USER = 'frank';
+const AUTH_PASS = 'repositorio';
+const AUTH_KEY  = 'repo_auth_fb';
+
+(function initAuth() {
+  const overlay  = document.getElementById('login-overlay');
+  const btnLogin = document.getElementById('login-btn');
+  const userEl   = document.getElementById('login-user');
+  const passEl   = document.getElementById('login-pass');
+  const errorEl  = document.getElementById('login-error');
+  const btnOut   = document.getElementById('btn-logout');
+
+  function isLogged() { return sessionStorage.getItem(AUTH_KEY) === '1'; }
+
+  function showApp()   { overlay.classList.add('hidden'); }
+  function showLogin() {
+    overlay.classList.remove('hidden');
+    userEl.value = ''; passEl.value = ''; errorEl.textContent = '';
+    setTimeout(() => userEl.focus(), 50);
+  }
+
+  function attempt() {
+    const u = userEl.value.trim();
+    const p = passEl.value;
+    if (u === AUTH_USER && p === AUTH_PASS) {
+      sessionStorage.setItem(AUTH_KEY, '1');
+      showApp();
+    } else {
+      errorEl.textContent = 'Usuario o contraseña incorrectos.';
+      passEl.value = '';
+      passEl.focus();
+      overlay.style.animation = 'shake 0.35s ease';
+      overlay.addEventListener('animationend', () => overlay.style.animation = '', { once: true });
+    }
+  }
+
+  btnLogin.addEventListener('click', attempt);
+  [userEl, passEl].forEach(el =>
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); })
+  );
+
+  btnOut.addEventListener('click', () => {
+    sessionStorage.removeItem(AUTH_KEY);
+    showLogin();
+  });
+
+  /* shake animation */
+  const style = document.createElement('style');
+  style.textContent = `@keyframes shake {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-8px)}
+    40%{transform:translateX(8px)}
+    60%{transform:translateX(-5px)}
+    80%{transform:translateX(5px)}
+  }`;
+  document.head.appendChild(style);
+
+  isLogged() ? showApp() : showLogin();
+})();
+
+/* ================================================================
+   SEED DATA — Colección inicial de obras
+================================================================ */
+const SEED_DATA = [
+  {
+    nombre: "Composición Azul con Símbolos",
+    artista: "",
+    tipo: "Cuadro",
+    material: "Técnica mixta sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Composición abstracta de gran formato en tonos azules intensos. La superficie está poblada de símbolos, flechas, escaleras, cruces y formas geométricas en ocre dorado y tierra. En la parte inferior puede leerse una firma parcial. La obra evoca un universo nocturno y simbólico, con referencias a mapas o constelaciones.",
+    imagenes: ["imgs/IMG_5370.jpg"]
+  },
+  {
+    nombre: "Diamante Geométrico con Triángulos",
+    artista: "",
+    tipo: "Escultura",
+    material: "Madera pintada con acrílico",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra mural de forma romboidal compuesta por paneles de madera pintados en azul marino oscuro. En el centro convergen planos que revelan triángulos de colores vivos: rojo, naranja y verde. La pieza juega con el volumen y la profundidad, creando un efecto geométrico y constructivista de gran impacto visual.",
+    imagenes: ["imgs/IMG_5371.jpg"]
+  },
+  {
+    nombre: "Discos en el Jardín",
+    artista: "",
+    tipo: "Escultura",
+    material: "Acero oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Instalación exterior compuesta por dos esculturas de discos semicirculares en acero oxidado montados sobre varillas de hierro. Las piezas están integradas orgánicamente en un jardín con plantas tropicales, generando un diálogo entre la forma industrial del metal y la naturaleza circundante.",
+    imagenes: ["imgs/IMG_5372.jpg", "imgs/IMG_5373.jpg"]
+  },
+  {
+    nombre: "Noir / Blanc",
+    artista: "",
+    tipo: "Técnica mixta",
+    material: "Técnica mixta sobre lienzo con marco de madera y herrajes de hierro",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra de técnica mixta de gran complejidad. Sobre un fondo trabajado con capas de pintura, números y fragmentos de texto en francés ('Noir', 'Blanc'), el artista ha construido una composición densa y estratificada. El marco dorado antiguo contrasta con elementos de hierro oxidado que lo atraviesan, extendiendo la obra fuera de sus límites tradicionales.",
+    imagenes: ["imgs/IMG_5375.jpg"]
+  },
+  {
+    nombre: "Tótem Violeta",
+    artista: "Harry Abend",
+    nacionalidad: "Polaco-venezolano",
+    tipo: "Escultura",
+    material: "Resina o fibra de vidrio pintada sobre base de metal",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura totémica vertical conformada por bloques rectangulares de madera apilados y desplazados ligeramente entre sí, pintados en un intenso color violeta/morado uniforme. La pieza descansa sobre una base metálica negra. La composición evoca una inestabilidad equilibrada, como si los volúmenes desafiaran la gravedad. Obra característica de Harry Abend (Polonia/Venezuela, 1937–2021), escultor venezolano reconocido por sus ensamblajes geométricos de gran rigor formal.",
+    imagenes: ["imgs/IMG_5376.jpg"]
+  },
+  {
+    nombre: "Díptico Abstracto",
+    artista: "",
+    tipo: "Cuadro",
+    material: "Óleo y acrílico sobre lienzo (díptico)",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran díptico de pintura abstracta de formato horizontal. Las dos telas muestran una composición gestual con manchas amplias en ocre, gris y azul, cruzadas por líneas dripping en colores vivos (rojo, verde, negro, blanco). La obra refleja una energía expresionista con referencias a formas orgánicas y ramas, firmada en el ángulo inferior izquierdo.",
+    imagenes: ["imgs/IMG_5379.jpg"]
+  },
+  {
+    nombre: "Composición con Óvulos",
+    artista: "",
+    tipo: "Técnica mixta",
+    material: "Elementos de madera o cerámica sobre soporte de lino",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra de formato vertical que reúne cientos de pequeñas formas ovoides dispuestas en una cuadrícula sobre un soporte de lino crudo. Cada pieza individual tiene marcas, incisiones o patrones únicos. Algunas llevan inscripciones o señales. La obra en conjunto evoca una taxonomía, un inventario de formas naturales.",
+    imagenes: ["imgs/IMG_5380.jpg"]
+  },
+  {
+    nombre: "Máscara en Caja Dorada",
+    artista: "",
+    tipo: "Técnica mixta",
+    material: "Metal (plomo o bronce) sobre fondo de lino, enmarcado en caja dorada con cristal",
+    medida: "",
+    fecha: "",
+    descripcion: "Relieve tridimensional de un rostro masculino barbado con turbante, modelado en metal oscuro (posiblemente plomo o bronce) y montado sobre un fondo de lino gris. La pieza está contenida en una caja-marco dorada con cristal protector. El resultado es una obra que oscila entre la escultura y el cuadro, con una fuerte presencia arqueológica.",
+    imagenes: ["imgs/IMG_5382.jpg"]
+  },
+  {
+    nombre: "El Armario",
+    artista: "Ignacio Iturria",
+    nacionalidad: "Uruguayo",
+    tipo: "Cuadro",
+    material: "Óleo sobre lienzo",
+    medida: "",
+    fecha: "1992",
+    descripcion: "Pintura figurativa que representa un armario o vitrina de madera oscura con puertas de vidrio. En su interior, sobre los estantes, se distribuyen pequeñas figuras humanas que parecen músicos, bailarines y personajes militares. Firmado 'Iturria' en el ángulo inferior derecho y fechado '92' en el inferior izquierdo. Ignacio Iturria (Uruguay, 1949) es reconocido por sus escenas narrativas con muebles y figuras diminutas.",
+    imagenes: ["imgs/IMG_5384.jpg"]
+  },
+  {
+    nombre: "Composición Circular en Hierro",
+    artista: "Artista (iniciales A.V.)",
+    nacionalidad: "",
+    tipo: "Escultura",
+    material: "Hierro fundido oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura abstracta de gran formato en hierro oxidado, de disposición horizontal. La obra está compuesta por formas circulares y semicirculares entrelazadas sobre una base plana, creando una tensión dinámica de volúmenes. Lleva pintadas las iniciales 'AV' en amarillo sobre uno de los discos — firma del artista aún por identificar plenamente.",
+    imagenes: ["imgs/IMG_5386.jpg"]
+  },
+  {
+    nombre: "León Decorativo",
+    artista: "",
+    tipo: "Escultura",
+    material: "Yeso o cemento policromado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de gran tamaño representando un león en posición de caminar. La superficie está pintada con un fondo granate oscuro y motivos circulares blancos. El rostro tiene rasgos expresivos y una boca abierta con lengua roja. Pieza de carácter decorativo y popular, ubicada en un jardín exterior.",
+    imagenes: ["imgs/IMG_5388.jpg"]
+  },
+  {
+    nombre: "Composición con Texto y Alfabeto",
+    artista: "",
+    tipo: "Técnica mixta",
+    material: "Técnica mixta sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran composición horizontal que integra registros visuales y lingüísticos. La mitad izquierda muestra columnas de letras y números sobre fondo plateado. La mitad derecha presenta una superficie oscura tipo pizarrón con escritura gestual en blanco y azul, incluyendo flechas y signos. El conjunto reflexiona sobre el lenguaje como materia visual.",
+    imagenes: ["imgs/IMG_5389.jpg"]
+  },
+  {
+    nombre: "Disco Solar",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de exterior compuesta por un gran disco circular de hierro oxidado partido en dos, sostenido por una estructura vertical rectangular con una ranura central. La base también es de hierro. La forma evoca un astro, un sol o una luna. La textura del metal oxidado añade riqueza visual a la pieza.",
+    imagenes: ["imgs/IMG_5391.jpg"]
+  },
+  {
+    nombre: "Columna con Cúpula",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado y metal ennegrecido",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura vertical de carácter totémico ubicada en el rincón de un interior. Está formada por un cuerpo rectangular de hierro oxidado muy texturado, sobre el que descansa una forma redondeada superior de metal oscuro similar a un cuenco o cúpula invertida. La pieza tiene una presencia monumental a pesar de su escala.",
+    imagenes: ["imgs/IMG_5393.jpg"]
+  },
+  {
+    nombre: "Bodegones en Marcos Rústicos",
+    artista: "",
+    tipo: "Cuadro",
+    material: "Óleo sobre tabla en marcos de madera rústica con herrajes de hierro",
+    medida: "",
+    fecha: "",
+    descripcion: "Serie de pequeñas pinturas de bodegón —un cuenco, una jarra, una tetera— ejecutadas en tonos azul-grisáceos apagados. Cada pintura está enmarcada en un marco artesanal de madera blanqueada con herrajes de hierro oxidado a modo de bisagras o corchetes. El conjunto crea un diálogo entre la pintura y el objeto.",
+    imagenes: ["imgs/IMG_5394.jpg", "imgs/IMG_5395.jpg"]
+  },
+  {
+    nombre: "Elefante de Alambre",
+    artista: "",
+    tipo: "Escultura",
+    material: "Alambre de hierro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura figurativa de pequeño formato que representa un elefante en movimiento, construida enteramente con alambre de hierro enrollado y entretejido. La técnica del alambre permite ver a través de la forma, creando una figura a la vez sólida y etérea. La cola y la trompa están modeladas con precisión gestual.",
+    imagenes: ["imgs/IMG_5397.jpg"]
+  },
+  {
+    nombre: "Instalación de Seis Arcos",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado con bases circulares",
+    medida: "",
+    fecha: "",
+    descripcion: "Instalación escultórica compuesta por seis piezas de hierro oxidado, cada una formada por arcos o crecientes entrelazados verticalmente sobre una base circular individual. Dispuestas en fila frente a un jardín con muro de piedra, las piezas crean un ritmo visual que evoca instrumentos, siluetas o figuras en danza.",
+    imagenes: ["imgs/IMG_5400.jpg", "imgs/IMG_5402.jpg"]
+  },
+  {
+    nombre: "Órgano Negro",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro pintado negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura abstracta compuesta por varios elementos verticales de sección rectangular que emergen de una base plana, cada uno con un corte diagonal y una ligera torsión en su parte superior. La pintura negra mate unifica el conjunto y acentúa las aristas. La forma evoca tubos de órgano o espigas arquitectónicas.",
+    imagenes: ["imgs/IMG_5405.jpg"]
+  },
+  {
+    nombre: "Explosión Roja",
+    artista: "Edgar Negret",
+    nacionalidad: "Colombiano",
+    tipo: "Escultura",
+    material: "Aluminio pintado de rojo con tornillos y remaches, base de concreto negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de exterior de gran energía visual: láminas de aluminio planas y curvadas, unidas con tornillos y remaches visibles y pintadas en rojo intenso, irradian desde un centro en todas las direcciones creando una forma explosiva o estelar. La base es un cubo sólido de concreto pintado negro. Característico del lenguaje escultórico de Edgar Negret (Colombia, 1920–2012), pionero de la escultura abstracta latinoamericana con su serie 'Aparatos Mágicos'.",
+    imagenes: ["imgs/IMG_5408.jpg"]
+  },
+  {
+    nombre: "Relieve Rojo Mural",
+    artista: "Edgar Negret",
+    nacionalidad: "Colombiano",
+    tipo: "Escultura",
+    material: "Aluminio pintado de rojo con tornillos, montado en tablero negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Relieve mural: láminas de aluminio de perfil curvo e irregular, pintadas en rojo intenso y ensambladas con tornillos visibles, emergen de un soporte cuadrado negro montado en diagonal (forma de rombo). Pertenece al vocabulario formal de Edgar Negret (Colombia, 1920–2012), cuyas esculturas en aluminio pintado y ensamblado con tornillos son hitos del arte constructivo latinoamericano.",
+    imagenes: ["imgs/IMG_5410.jpg"]
+  },
+  {
+    nombre: "Espejo Ornamental con Marco de Cobre",
+    artista: "",
+    tipo: "Otro",
+    material: "Espejo y cobre grabado",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran espejo de pared con un elaborado marco de cristal color cobre/rose gold grabado con motivos florales, geométricos y vegetales en relieve. El marco ondulado de bordes irregulares enmarca el espejo central. Pieza de carácter decorativo y artesanal de gran escala, instalada en el salón principal.",
+    imagenes: ["imgs/IMG_5412.jpg"]
+  },
+  {
+    nombre: "Animal Elongado",
+    artista: "",
+    tipo: "Escultura",
+    material: "Bronce o hierro fundido",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de gran formato representando un animal cuadrúpedo de formas muy estilizadas y elongadas —posiblemente un caballo o ciervo— en actitud de movimiento. El cuello está extraordinariamente alargado y curvo. La figura reposa sobre una base plana de metal con relieves labrados en bajo relieve que evocan un laberinto o escritura.",
+    imagenes: ["imgs/IMG_5415.jpg"]
+  },
+  {
+    nombre: "Cisco Kid",
+    artista: "",
+    tipo: "Cuadro",
+    material: "Acrílico sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran cuadro de pintura expresionista y neo-figurativa sobre fondo ocre. En el centro compositivo aparece una figura abstracta con un triángulo negro y una franja horizontal blanca. Las palabras 'Cisco Kid' y 'Cisco' están escritas en rojo en diferentes puntos del lienzo, junto con otros signos y texturas gestuales. La obra dialoga con el lenguaje del neo-expresionismo y el grafiti.",
+    imagenes: ["imgs/IMG_5417.jpg"]
+  },
+  {
+    nombre: "Arquitectura Roja",
+    artista: "Edgar Negret",
+    nacionalidad: "Colombiano",
+    tipo: "Escultura",
+    material: "Aluminio pintado de rojo con tornillos y remaches, base de aluminio",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de gran escala con vocabulario arquitectónico e industrial. Cilindros y piezas rectangulares de aluminio, pintados en rojo intenso y ensamblados con tornillos y remaches visibles, se articulan en una forma compleja de múltiples planos y ángulos. La base es una plataforma de aluminio cepillado con acabado plateado. Obra monumental plenamente inscrita en el lenguaje de Edgar Negret (Colombia, 1920–2012): aluminio, color rojo y ensamblaje mecánico como poética constructiva.",
+    imagenes: ["imgs/IMG_5418.jpg", "imgs/IMG_5419.jpg"]
+  },
+  {
+    nombre: "Constelación de Sellos",
+    artista: "",
+    tipo: "Técnica mixta",
+    material: "Cera (lacre), grafito y lápiz sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra de técnica mixta sobre lienzo blanco. Nueve sellos de lacre de distintos colores —negro, rojo sangre, gris, ámbar— están adheridos a la superficie en una disposición que parece responder a una lógica oculta. Líneas curvas y texto manuscrito en grafito trazan conexiones entre ellos, evocando una carta astral, un mapa relacional o una correspondencia cifrada.",
+    imagenes: ["imgs/IMG_5420.jpg"]
+  },
+  {
+    nombre: "Hojas sobre Varilla",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado con base de piedra",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura vertical de carácter orgánico: dos formas en abanico o hoja de hierro oxidado están montadas sobre una larga varilla curva que termina en una espiral en su base, apoyada sobre una piedra natural irregular. La ligereza de la forma contrasta con el peso del material, creando una tensión entre lo natural y lo artificial.",
+    imagenes: ["imgs/IMG_5425.jpg"]
+  },
+  {
+    nombre: "Trío de Semicírculos",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado y hierro pintado negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Serie de tres esculturas de pequeño formato, cada una compuesta por un semicírculo de hierro con una asa o anilla ovalada en la parte inferior, a modo de sello o timbre. Dos de las piezas están en hierro natural oxidado y la central está pintada de negro. El conjunto es a la vez escultórico y funcional en su apariencia.",
+    imagenes: ["imgs/IMG_5428.jpg"]
+  },
+  {
+    nombre: "Marco con Óvalo Interior",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de gran formato en hierro oxidado compuesta por un rectángulo vertical con bordes ligeramente curvados que enmarca un gran círculo vaciado. Dentro del círculo, un plano elíptico flotante completa la composición. La obra juega con el lleno y el vacío, el contorno y el interior, recordando estructuras de ventana o portal.",
+    imagenes: ["imgs/IMG_5429.jpg"]
+  },
+  {
+    nombre: "Cuatro Paneles Negros",
+    artista: "",
+    tipo: "Cuadro",
+    material: "Óleo o esmalte sobre madera",
+    medida: "",
+    fecha: "",
+    descripcion: "Serie de cuatro pequeños paneles cuadrados pintados en negro mate profundo, con un sutil relieve en la superficie que dibuja cuadrados concéntricos. Los bordes inferiores de cada panel muestran un pequeño trazo de color rojo o rosa. El conjunto minimal juega con la percepción del negro como ausencia y como presencia.",
+    imagenes: ["imgs/IMG_5431.jpg"]
+  },
+  {
+    nombre: "Desnudo Femenino en Relieve",
+    artista: "",
+    tipo: "Técnica mixta",
+    material: "Cerámica o relieve de arena sobre soporte, enmarcado en madera",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra de técnica mixta enmarcada en madera oscura que representa un desnudo femenino sedente. La figura está modelada con una superficie rugosa y texturada de tonos arena, beige y tierra, con trazos de colores apagados (verde, granate, gris) que definen la anatomía. El estilo remite a tradiciones expresionistas y primitivas. Firmada en la esquina superior izquierda.",
+    imagenes: ["imgs/IMG_5433.jpg"]
+  },
+  {
+    nombre: "Trío de Cilindros",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Instalación de tres grandes esculturas cilíndricas de hierro oxidado con remate semicircular superior y una ranura horizontal que sugiere ojos entreabiertos. Colocadas en exterior sobre pavimento de concreto, las tres piezas de alturas ligeramente distintas funcionan como una familia o grupo de figuras antropomórficas.",
+    imagenes: ["imgs/IMG_5434.jpg", "imgs/IMG_5437.jpg"]
+  },
+  {
+    nombre: "Dos Paneles con Óvalo",
+    artista: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de exterior de gran escala compuesta por dos paneles rectangulares altos de hierro oxidado, cada uno con un óvalo recortado en su parte superior, dispuestos enfrentados y ligeramente separados. El espacio entre ellos crea un vacío activo, una forma negativa que dialoga con la forma sólida del metal.",
+    imagenes: ["imgs/IMG_5439.jpg"]
+  },
+  {
+    nombre: "Cuatro Paneles de Cerámica con Caballos",
+    artista: "",
+    coleccion: "Caballos",
+    tipo: "Técnica mixta",
+    material: "Cerámica esmaltada",
+    medida: "",
+    fecha: "",
+    descripcion: "Conjunto de cuatro paneles cerámicos cuadrados colgados en una pared de color verde oscuro. Cada panel está compuesto por una cuadrícula de pequeñas fichas cerámicas con caballos en relieve. Los estilos varían: dos paneles tienen esmalte oscuro (verde-negro) con caballos blancos, uno tiene fondo blanco con caballos en línea gris, y el cuarto combina blanco con una tesela en rojo.",
+    imagenes: ["imgs/IMG_5440.jpg"]
+  },
+  {
+    nombre: "Retrato Expresionista",
+    artista: "",
+    tipo: "Cuadro",
+    material: "Acrílico sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran retrato de formato vertical con influencia del expresionismo y el pop art. El rostro de una mujer joven rubia con labios rojos emerge de un fondo de trazos gestuales en azul, rojo y gris. La figura central está delineada con líneas negras gruesas sobre una zona blanca rectangular, creando un efecto de imagen dentro de la imagen.",
+    imagenes: ["imgs/IMG_5442.jpg"]
+  },
+  {
+    nombre: "Caballo en Campo Abierto",
+    artista: "Alirio Palacios",
+    nacionalidad: "Venezolano",
+    coleccion: "Caballos",
+    tipo: "Cuadro",
+    material: "Óleo sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Pintura de formato cuadrado que representa un caballo oscuro (bayo oscuro) en perfil derecho sobre un fondo de tonos claros grises y blancos. La técnica es fluida y gestual, con atención al volumen y la musculatura del animal. Pertenece a la serie de caballos que Alirio Palacios (Venezuela, 1938–2015) desarrolló a partir de los años 90, inspirada en su extensa estadía en China y en la tradición pictórica oriental.",
+    imagenes: ["imgs/unnamed.jpg"]
+  },
+  {
+    nombre: "Caballo con Rueda de Carreta",
+    artista: "Alirio Palacios",
+    nacionalidad: "Venezolano",
+    coleccion: "Caballos",
+    tipo: "Cuadro",
+    material: "Óleo o acrílico sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Pintura expresionista de un caballo oscuro rojo-granate junto a una rueda de carreta, sobre un fondo con campos de color (azul, verde, ocre). La factura es gestual y enérgica, con salpicaduras de pintura roja y trazos rápidos que dotan a la composición de movimiento y vitalidad. De Alirio Palacios (Venezuela, 1938–2015), Premio Nacional de Artes Plásticas 1977, cuya obra oscila entre lo figurativo y lo abstracto con el caballo como motivo recurrente y poético.",
+    imagenes: ["imgs/c98927fe-03c7-4fdc-9e9a-901097fc4368.jpg"]
+  },
+  {
+    nombre: "Caballo de Carrusel",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Madera policromada",
+    medida: "",
+    fecha: "",
+    descripcion: "Figura de caballo de carrusel de gran tamaño, tallada en madera y policromada con vivos colores. La silla está decorada con motivos geométricos en rojo, azul, verde y dorado. Las pezuñas están pintadas de negro. Pieza de carácter festivo y popular, ubicada frente a una ventana con jardín tropical al fondo.",
+    imagenes: ["imgs/IMG_5566.jpg"]
+  },
+  {
+    nombre: "Escudo de Armas",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Cuadro",
+    material: "Pintura sobre papel, enmarcada en marco dorado tallado",
+    medida: "",
+    fecha: "",
+    descripcion: "Representación heráldica de un escudo de armas sobre fondo ocre. El escudo central en azul intenso muestra un águila negra bicéfala con cruces azules en las esquinas, rodeada de llamas rojas y amarillas. En la cimera, un yelmo negro con plumas azules. Enmarcado en un elaborado marco dorado con motivos de hojas y volutas.",
+    imagenes: ["imgs/IMG_5568.jpg"]
+  },
+  {
+    nombre: "Composición Geométrica en Lila",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Grabado",
+    material: "Serigrafía sobre papel",
+    medida: "",
+    fecha: "",
+    descripcion: "Serigrafía de composición geométrica abstracta. La parte superior muestra dos rectángulos yuxtapuestos —uno blanco y uno gris plateado— enmarcados en lila. La parte inferior presenta líneas horizontales en negro, blanco y lila entrelazadas. Dedicada 'Para Frank Briceño amistosamente' con firma del artista.",
+    imagenes: ["imgs/IMG_5572.jpg"]
+  },
+  {
+    nombre: "Caballo Tang",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Bronce con pátina verde sobre base oval negra",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo al estilo de la dinastía Tang china, en bronce oscuro con pátina verde en la silla y los arreos. El animal está en posición de marcha con una pata delantera levantada. La silla y los arreos están finamente trabajados con motivos ornamentales en relieve. Descansa sobre una base oval negra.",
+    imagenes: ["imgs/IMG_5575.jpg"]
+  },
+  {
+    nombre: "Composición Op Art con Líneas Azules",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Grabado",
+    material: "Serigrafía sobre papel",
+    medida: "",
+    fecha: "",
+    descripcion: "Serigrafía de arte óptico sobre papel envejecido. Composición cuadrada con líneas horizontales en negro y blanco que se quiebran en el centro formando una sinusoide en azul intenso, creando un efecto de vibración visual característico del cinetismo. Dedicada 'A Poly y Frank', firmada por el artista.",
+    imagenes: ["imgs/IMG_5577.jpg"]
+  },
+  {
+    nombre: "Colección de Elefantes",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Otro",
+    material: "Porcelana, madera, piedra, metal esmaltado, alambre y cerámica",
+    medida: "",
+    fecha: "",
+    descripcion: "Conjunto de figuras decorativas de elefantes de diversos tamaños, materiales y estilos: porcelana blanca, madera oscura, piedra beige, metal esmaltado con motivos de colores, alambre plateado y cerámica azul. Las piezas están dispuestas sobre un estante de madera formando una composición colectiva de gran riqueza visual.",
+    imagenes: ["imgs/IMG_5579.jpg"]
+  },
+  {
+    nombre: "Esfera en Cubo de Acrílico",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Acrílico transparente con bordes plateados",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura cinética de pequeño formato consistente en una esfera de acrílico transparente con formas curvas en su interior, enmarcada en un cubo cuadrado del mismo material con bordes plateados. La pieza juega con la refracción de la luz y la transparencia del material, creando efectos ópticos de profundidad.",
+    imagenes: ["imgs/IMG_5581.jpg"]
+  },
+  {
+    nombre: "Caballo de Cerámica Texturada",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Cerámica texturada con freno de metal",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo en cerámica de acabado rugoso y texturado, con incisiones cruzadas que cubren toda la superficie del cuerpo. El animal tiene forma redondeada y estilizada. El freno y las anillas están realizados en metal gris y azul, contrastando con el tono tierra de la cerámica.",
+    imagenes: ["imgs/IMG_5582.jpg", "imgs/IMG_5583.jpg"]
+  },
+  {
+    nombre: "Caballo en Bronce con Placa",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Bronce sobre base de madera oscura",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo en bronce de tonos cálidos, en posición encabritada con la cabeza echada hacia atrás. El cuerpo está modelado con segmentos articulados visibles. Descansa sobre una base cuadrada de madera oscura con una placa metálica identificatoria en el frente.",
+    imagenes: ["imgs/IMG_5584.jpg"]
+  },
+  {
+    nombre: "Cruz de Aspas en Hierro Oxidado",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de gran formato en hierro oxidado compuesta por cuatro aspas o sectores circulares que forman una cruz o molinete, sostenida por dos barras diagonales que se cruzan en el centro. La obra se apoya libremente contra una pared. La textura del óxido añade riqueza material y cromática a la pieza.",
+    imagenes: ["imgs/IMG_5588.jpg"]
+  },
+  {
+    nombre: "Almanaque Circular",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Madera, cristal, alambre y piedra",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra circular formada por un marco dodecagonal de paneles de madera o cristal translúcido con los nombres de los meses inscritos en cada segmento. En el interior, una figura lineal de alambre negro sostiene un pequeño péndulo suspendido. La pieza evoca un calendario, un reloj o un mandala de tiempo.",
+    imagenes: ["imgs/IMG_5592.jpg"]
+  },
+  {
+    nombre: "Óvalo de Madera en Base de Mármol",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera natural sobre base de mármol blanco",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de formato vertical que representa un óvalo de madera natural, dividido horizontalmente en franjas por cortes que dejan ranuras en forma de almendras. La pieza lleva grabado en la parte inferior el logotipo circular del artista y descansa sobre una base rectangular de mármol blanco.",
+    imagenes: ["imgs/IMG_5594.jpg"]
+  },
+  {
+    nombre: "Tótem de Cubos Turquesa",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera pintada en turquesa sobre base de mármol blanco",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura totémica vertical compuesta por módulos cúbicos de madera con las aristas chanfradas, pintados en turquesa intenso que deja ver la madera natural en los planos cortados. La composición crea una forma simétrica y rítmica que recuerda a una figura antropomórfica. Descansa sobre una base rectangular de mármol blanco.",
+    imagenes: ["imgs/IMG_5595.jpg"]
+  },
+  {
+    nombre: "Tótem de Arcilla",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Arcilla o bronce sobre base de arcilla",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura totémica vertical en arcilla o bronce de tonos terra y beige. La pieza está compuesta por volúmenes rectangulares superpuestos con superficies rugosas y texturadas, con un plano superior esmaltado en rosa-malva. La base es un paralelepípedo irregular del mismo material. Numerada en la base.",
+    imagenes: ["imgs/IMG_5596.jpg", "imgs/IMG_5597.jpg"]
+  },
+  {
+    nombre: "Cabeza de Caballo en Barro",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Terracota con crin de fibra natural",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de cabeza de caballo en terracota o arcilla sin glasear, de formas redondeadas y orgánicas. La boca está abierta y el cuello se integra en una masa corporal esférica. La crin está realizada con fibras o cordones naturales enroscados, añadiendo una textura contrastante a la superficie lisa de la arcilla.",
+    imagenes: ["imgs/IMG_5598.jpg", "imgs/IMG_5599.jpg"]
+  },
+  {
+    nombre: "Caballo Encabritado en Bronce Oscuro",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Bronce patinado sobre base de mármol travertino y metal",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de gran formato de un caballo encabritado en bronce oscuro, con crin y cola modeladas en detalle. El cuerpo está compuesto por segmentos ensamblados. La base es una placa rectangular de metal sobre un zócalo de mármol travertino. La crin lleva inscripciones decorativas.",
+    imagenes: ["imgs/IMG_5601.jpg", "imgs/IMG_5602.jpg"]
+  },
+  {
+    nombre: "Caballo en Bronce Verde con Figura Alada",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Bronce con pátina verde sobre base rectangular de bronce oscuro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo en bronce con pátina verde intensa, en posición encabritada. Sobre el lomo del animal se sitúa una figura alada en bronce dorado. La base es un paralelepípedo rectangular de bronce oscuro. Obra firmada en la base y numerada 4/6.",
+    imagenes: ["imgs/IMG_5603.jpg", "imgs/IMG_5609.jpg"]
+  },
+  {
+    nombre: "Caballo en Bronce Verde con Silla",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "Caballos",
+    tipo: "Escultura",
+    material: "Bronce con pátina verde sobre base cuadrada de bronce oscuro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo en bronce con intensa pátina verde, en posición encabritada hacia la izquierda. El animal lleva una silla de montar en bronce dorado con herrajes visibles. La base es cuadrada de bronce oscuro. Figura ecuestre clásica reinterpretada con pátina moderna.",
+    imagenes: ["imgs/IMG_5605.jpg"]
+  },
+  {
+    nombre: "Bruegel",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Técnica mixta sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran composición de técnica mixta sobre fondo oscuro dominado por tonos sepia, tierra y gris. La palabra 'BRUEGEL' aparece estampada en el ángulo superior derecho. La escena figurativa incluye caballos, jinetes y figuras en movimiento que evocan las composiciones del maestro flamenco. La superficie está trabajada con capas y veladuras que crean una atmósfera densa y onírica.",
+    imagenes: ["imgs/IMG_5613.jpg"]
+  },
+  {
+    nombre: "Móvil Cinético con Discos",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Varillas de metal y discos de acrílico pintado, instalación colgante",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran instalación cinética compuesta por dos móviles suspendidos del techo, cada uno formado por una red de varillas de metal fino de las que cuelgan discos ovales y circulares en azul marino, verde y negro. Las piezas se equilibran y se mueven con el aire. Instalada en un espacio con claraboya cenital. Evoca el lenguaje de Alexander Calder.",
+    imagenes: ["imgs/IMG_5616.jpg", "imgs/IMG_5620.jpg"]
+  },
+  {
+    nombre: "Pintura Abstracta con Dripping",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Cuadro",
+    material: "Acrílico sobre lienzo, enmarcado en madera oscura",
+    medida: "",
+    fecha: "1985",
+    descripcion: "Gran pintura abstracta de formato vertical con campos de color horizontales que van del beige y azul oscuro en la parte superior al azul celeste intenso en la inferior. Líneas de dripping en azul marino, burdeos, negro y naranja dorado caen verticalmente, añadiendo dinamismo gestual. Firmada y fechada '85 en el ángulo inferior izquierdo.",
+    imagenes: ["imgs/IMG_5624.jpg"]
+  },
+  {
+    nombre: "Serigrafía con Cintas de Colores",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Grabado",
+    material: "Serigrafía sobre papel, enmarcada en metal con cristal",
+    medida: "",
+    fecha: "",
+    descripcion: "Serigrafía de gran formato compuesta por dos rectángulos superiores —uno negro y uno azul— y una sección inferior de líneas horizontales en blanco, negro y azul entrelazadas con franjas diagonales. Enmarcada en metal plateado con cristal. Pertenece al vocabulario formal del cinetismo venezolano.",
+    imagenes: ["imgs/IMG_5626.jpg", "imgs/IMG_5627.jpg"]
+  },
+  {
+    nombre: "Gran Pintura Abstracta en Gris",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Cuadro",
+    material: "Técnica mixta sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran pintura cuadrada de carácter expresionista abstracto, dominada por una paleta de grises, blancos y ocres apagados. La superficie está trabajada con materia densa y relieves que crean planos y texturas complejas. En el centro se distinguen trazos gestuales negros sobre fondos más claros que evocan escritura o arquitectura.",
+    imagenes: ["imgs/IMG_5629.jpg"]
+  },
+  {
+    nombre: "Políptico con Paisajes y Elefantes",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Cuadro",
+    material: "Óleo o acrílico sobre lienzo en marco oscuro",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran pintura horizontal de formato apaisado que simula una galería con múltiples ventanas. Cada ventana enmarca un paisaje diferente —sabana, palmeras, elefantes en manada, cielos cargados— ejecutados en tonos tierra, dorado y gris azulado. El conjunto crea un efecto de collage pintado que evoca el trópico africano.",
+    imagenes: ["imgs/IMG_5634.jpg"]
+  },
+  {
+    nombre: "Cuadrícula de Símbolos I",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Cuadro",
+    material: "Técnica mixta sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Gran composición cuadrada organizada en una cuadrícula de veinte celdas (4×5). Cada celda contiene un símbolo, objeto o abstracción en tonos azul, gris, marrón y negro sobre fondo claro. Los motivos incluyen formas geométricas, objetos cotidianos y signos gestuales. Firmada en el ángulo inferior derecho.",
+    imagenes: ["imgs/IMG_5636.jpg"]
+  },
+  {
+    nombre: "Cuadrícula de Símbolos II",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Cuadro",
+    material: "Técnica mixta sobre lienzo",
+    medida: "",
+    fecha: "",
+    descripcion: "Composición cuadrada en cuadrícula de veinte celdas (4×5), compañera de la obra anterior. Cada celda contiene imágenes abstractas o simbólicas en tonos azul, marrón, gris y negro: figuras, enredos, cruces y cuencos. Forma parte de la misma serie o díptico que Cuadrícula de Símbolos I.",
+    imagenes: ["imgs/IMG_5642.jpg"]
+  },
+  {
+    nombre: "Serie de Esculturas de Hierro",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Hierro oxidado sobre base de hierro",
+    medida: "",
+    fecha: "",
+    descripcion: "Serie de cuatro esculturas de pequeño formato en hierro oxidado, cada una con una geometría distinta: una con recorte triangular y ventana rectangular, una totémica con facetas, una con dos planos abiertos en torsión, y una de perfil afilado. Todas comparten material, escala y base, funcionando como una familia escultórica coherente.",
+    imagenes: ["imgs/IMG_5643.jpg", "imgs/IMG_5644.jpg", "imgs/IMG_5645.jpg", "imgs/IMG_5646.jpg"]
+  },
+  {
+    nombre: "Disco Circular en Bronce",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Bronce sobre base de madera",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura circular en bronce de tonos dorados y ocres, con una forma interior en espiral u onda que genera un espacio vacío central dinámico. La textura de la fundición es irregular y orgánica. Descansa sobre una pequeña base cuadrada de madera natural.",
+    imagenes: ["imgs/IMG_5650.jpg"]
+  },
+  {
+    nombre: "Alusivo a la Encuesta Delphi",
+    artista: "Alejandro Salas",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Metal pintado sobre base de cemento pintado",
+    medida: "",
+    fecha: "1977",
+    descripcion: "Escultura vertical formada por múltiples varillas de metal que descienden en zigzag paralelo desde una placa horizontal superior, creando una forma rítmica y repetitiva de gran elegancia. Pintada en blanco crema, descansa sobre un cubo de cemento del mismo color. Placa en la base: 'Obra del escultor Alejandro Salas, Alusivo a la Encuesta Delphi, 10/60, 1977'.",
+    imagenes: ["imgs/IMG_5653.jpg"]
+  },
+  {
+    nombre: "Retrato de Mujer con Flores",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Dibujo",
+    material: "Carboncillo sobre papel, enmarcado",
+    medida: "",
+    fecha: "1957",
+    descripcion: "Dibujo en carboncillo de un retrato femenino de tres cuartos, con la cabeza inclinada y los ojos entrecerrados. El cabello está adornado con flores y elementos decorativos dibujados con gran detalle. El estilo es académico con elementos simbólicos. Firmado 'Efebe-57'.",
+    imagenes: ["imgs/IMG_5658.jpg"]
+  },
+  {
+    nombre: "Desnudos en Carboncillo",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Dibujo",
+    material: "Carboncillo sobre papel, enmarcado en madera dorada",
+    medida: "",
+    fecha: "",
+    descripcion: "Dibujo en carboncillo de gran formato que representa tres figuras femeninas desnudas en un espacio interior. Las figuras están tratadas con volumetría y claroscuro, en actitudes de movimiento. El trazo es suelto y expresivo. Firmado en el ángulo inferior derecho.",
+    imagenes: ["imgs/IMG_5659.jpg"]
+  },
+  {
+    nombre: "Boceto Urbano con Figuras",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Dibujo",
+    material: "Tinta sobre papel amarillo, enmarcado en metal",
+    medida: "",
+    fecha: "",
+    descripcion: "Dibujo a línea sobre papel amarillo que representa una escena urbana esquemática: edificios altos y delgados y un grupo de figuras humanas de pequeña escala en la parte inferior. El trazo es sintético y gestual. Firmado con iniciales en el ángulo inferior derecho.",
+    imagenes: ["imgs/IMG_5661.jpg"]
+  },
+  {
+    nombre: "Desnudo Femenino",
+    artista: "Guillermo Márquez",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Dibujo",
+    material: "Carboncillo sobre papel, enmarcado en madera dorada",
+    medida: "",
+    fecha: "1969",
+    descripcion: "Dibujo en carboncillo de un desnudo femenino visto de espaldas, de torso. La figura está modelada con sombreados sutiles y trazo suelto. Dedicado 'Para el amigo Frank Briceño con afecto, Guillermo Márquez, 5/10/69'. Firmado en el ángulo inferior derecho.",
+    imagenes: ["imgs/IMG_5667.jpg"]
+  },
+  {
+    nombre: "L'Amour",
+    artista: "Guillermo Márquez",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica esmaltada en rojo sobre base de mármol negro",
+    medida: "",
+    fecha: "1973",
+    descripcion: "Escultura abstracta de cerámica esmaltada en rojo intenso que representa una figura humana estilizada con formas redondeadas y orgánicas: un torso curvo con un orificio circular en el centro y extremidades que se abren hacia arriba. La base es un cubo de mármol negro veteado. Placa: 'Guillermo Márquez, L'Amour, 5/8, Año 1973'.",
+    imagenes: ["imgs/IMG_5668.jpg", "imgs/IMG_5673.jpg"]
+  },
+  {
+    nombre: "Caja-Vitrina con Documentos Históricos",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Madera oxidada, cristal, documentos y objetos",
+    medida: "",
+    fecha: "",
+    descripcion: "Obra de técnica mixta en forma de caja-vitrina vertical de madera muy oxidada, dividida en dos compartimentos con cristal. El compartimento superior contiene un billete histórico con dos retratos. El inferior contiene un fragmento de tela con rayas de colores, un trozo de roca y texto manuscrito. Funciona como relicario o archivo de memoria histórica.",
+    imagenes: ["imgs/IMG_5674.jpg"]
+  },
+  {
+    nombre: "León Negro Intervenido",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Figura de cerámica intervenida con pintura acrílica y perla",
+    medida: "",
+    fecha: "",
+    descripcion: "Figurilla de león de pequeño formato con la superficie intervenida artísticamente: el cuerpo está pintado en negro mate con inscripciones en rojo, la melena en tonos azul y verde intensos con trazos expresionistas, y un ojo adornado con una perla. Transforma un objeto decorativo popular en una intervención artística contemporánea.",
+    imagenes: ["imgs/IMG_5678.jpg"]
+  },
+  {
+    nombre: "Pantera Negra Intervenida",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Figura intervenida con pintura acrílica",
+    medida: "",
+    fecha: "",
+    descripcion: "Figurilla de felino negro de pequeño formato con la superficie intervenida: el cuerpo negro está decorado con motivos en rojo, amarillo y azul —espirales, puntos, líneas— de inspiración tribal o popular. Las pezuñas y la cola tienen detalles en dorado. Pieza relacionada con el León Negro Intervenido.",
+    imagenes: ["imgs/IMG_5679.jpg"]
+  },
+  {
+    nombre: "Hormiga con Hoja",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Hierro forjado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura figurativa de pequeño formato representando una hormiga cargando una hoja sobre su cabeza. La hormiga está construida con varillas de hierro dobladas y soldadas, y la hoja es una pieza plana de hierro de contorno irregular. Capta con humor y precisión el gesto característico de la hormiga cortadora.",
+    imagenes: ["imgs/IMG_5681.jpg"]
+  },
+  {
+    nombre: "Nudo de Alambre",
+    artista: "Armas",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Alambre de metal sobre cubo de madera negra",
+    medida: "",
+    fecha: "1959",
+    descripcion: "Escultura de pequeño formato consistente en una masa densa y esférica de alambre fino enroscado y entrelazado irregularmente, mezclado con espinas o elementos orgánicos, montada sobre un cubo de madera pintado en negro mate. Firmada y fechada 'Armas 1959' en la base.",
+    imagenes: ["imgs/IMG_5684.jpg"]
+  },
+  {
+    nombre: "Cubo de Acrílico con Signos",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Acrílico transparente con espejos interiores y signos en vinilo negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura-objeto consistente en un cubo de acrílico transparente con espejos interiores, en cuyas caras se han aplicado signos y formas abstractas en vinilo o pintura negra que se reflejan infinitamente hacia adentro. Los signos son formas geométricas abiertas y entrelazadas que recuerdan caracteres de una escritura inventada.",
+    imagenes: ["imgs/IMG_5685.jpg", "imgs/IMG_5687.jpg"]
+  },
+  {
+    nombre: "Tablas de Skateboard Enmarcadas",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Tablas de skateboard sobre marcos de madera negra",
+    medida: "",
+    fecha: "",
+    descripcion: "Instalación compuesta por seis tablas de skateboard usadas, enmarcadas individualmente en cajas de madera negra y dispuestas en la pared. Cada tabla muestra el desgaste del uso y tiene gráficos, stickers y texto pintado. Una lleva la inscripción 'Skateboarding is not a crime'. El conjunto propone una reflexión sobre la cultura urbana y el objeto cotidiano convertido en obra de arte.",
+    imagenes: ["imgs/IMG_5692.jpg", "imgs/IMG_5688.jpg", "imgs/IMG_5689.jpg", "imgs/IMG_5691.jpg"]
+  },
+  {
+    nombre: "Caballo Mecedora Pintado",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada y pintada",
+    medida: "",
+    fecha: "",
+    descripcion: "Caballo mecedora de madera tallada y pintada en tonos beige rosado envejecido. La montura está decorada con franjas negras, detalles en verde y punteado dorado. Montado sobre balancines curvos del mismo material. Pieza de carácter artesanal y decorativo con acabado de pintura envejecida.",
+    imagenes: ["imgs/IMG_5894.jpg"]
+  },
+  {
+    nombre: "Caballo de Cerámica Azul con Motivos Florales",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica pintada",
+    medida: "",
+    fecha: "",
+    descripcion: "Figura de caballo de cerámica de forma compacta y estilizada, pintada en azul cobalto intenso sobre fondo blanco crema. El cuerpo está cubierto con motivos florales y vegetales incisos: hojas, flores y líneas onduladas distribuidas simétricamente. Pieza de tradición popular latinoamericana, posiblemente mexicana.",
+    imagenes: ["imgs/IMG_5897.jpg"]
+  },
+  {
+    nombre: "Caballo de Bronce Dorado",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Bronce",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo en bronce dorado de factura realista. El animal está representado en posición de marcha con una pata delantera levantada, crines y cola trabajadas con detalle. La superficie presenta patina dorada con leve oxidación verdosa en el costado. Pieza de calidad en fundición de bronce.",
+    imagenes: ["imgs/IMG_5899.jpg"]
+  },
+  {
+    nombre: "Caballo de Madera sobre Ruedas",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada",
+    medida: "",
+    fecha: "",
+    descripcion: "Juguete antiguo de caballo en madera maciza color caoba oscuro, de forma plana y simplificada. Montado sobre tres ruedas de madera con aros metálicos grises. La silueta del animal es esquemática y expresiva, característica del juguete artesanal de tradición folk. Muestra marcas del uso y el paso del tiempo.",
+    imagenes: ["imgs/IMG_5901.jpg"]
+  },
+  {
+    nombre: "Recipiente Zoomorfo de Cerámica Negra",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica de barro negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Pieza de cerámica de barro negro con forma de équido estilizado y cuerpo globular voluminoso. La superficie está decorada con motivos geométricos e incisos en tono dorado y siena que recorren el lomo y los flancos. El cuerpo tiene una línea de apertura en la mitad, lo que sugiere su función como contenedor o joyero.",
+    imagenes: ["imgs/IMG_5902.jpg"]
+  },
+  {
+    nombre: "Caballo de Madera con Guarniciones de Metal",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada con aplicaciones de cobre y latón repujado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo de madera oscura tallada a mano, recubierta con elaboradas guarniciones metálicas de cobre y latón repujado. Incluye silla de montar con medallón central de motivos florales, brida con cadena, pectoral y ornamentos decorativos en los flancos. De marcada tradición artesanal india, con gran riqueza de detalle.",
+    imagenes: ["imgs/IMG_5905.jpg"]
+  },
+  {
+    nombre: "Caballo al Estilo Tang",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica sin esmaltar",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo encabritado en cerámica sin esmaltar de color arena y terracota clara, con superficie de textura rugosa. El animal eleva las patas delanteras con energía, tiene silla de montar esbozada y cola levantada. Montado sobre base rectangular del mismo material. Estilo claramente inspirado en los célebres caballos de la dinastía Tang china.",
+    imagenes: ["imgs/IMG_5906.jpg"]
+  },
+  {
+    nombre: "Caballo Galopante en Resina Roja",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Resina",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo al galope en resina de color rojo oscuro granate. El animal se alza sobre dos patas traseras apoyadas en una base rocosa del mismo material. La superficie está muy detallada: crines al viento, arreos decorados con motivos de dragón y musculatura marcada. Pieza de fuerte carácter decorativo de influencia oriental.",
+    imagenes: ["imgs/IMG_5908.jpg"]
+  },
+  {
+    nombre: "Conjunto del Ejército de Terracota",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica",
+    medida: "",
+    fecha: "",
+    descripcion: "Conjunto de cinco figuras en cerámica oscura que reproducen el Ejército de Terracota de Xi'an: tres guerreros de pie en distintas posiciones y rangos, un guerrero arrodillado y un caballo de guerra. Acabado en gris oscuro con toques cobrizos que imitan el aspecto de las piezas originales del mausoleo del Primer Emperador Qin.",
+    imagenes: ["imgs/IMG_5910.jpg"]
+  },
+  {
+    nombre: "Escultura de Vidrio con Composición Abstracta en Rojo",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Vidrio satinado y vidrio de color",
+    medida: "",
+    fecha: "",
+    descripcion: "Placa rectangular de vidrio satinado mate con un medallón circular en relieve al centro. Dentro del círculo, composición abstracta formada por fragmentos de vidrio rojo vivo y trazos negros sobre fondo blanco opaco, que evoca escritura gestual o grafía. Montada sobre base de vidrio transparente apilado.",
+    imagenes: ["imgs/IMG_5911.jpg"]
+  },
+  {
+    nombre: "Escultura de Vidrio con Composición Abstracta en Azul",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Vidrio satinado y vidrio de color",
+    medida: "",
+    fecha: "",
+    descripcion: "Placa rectangular de vidrio satinado mate con medallón circular en relieve al centro. La composición interior combina amplias manchas negras, un rectángulo azul cobalto central con líneas blancas, tonos burdeos y texturas de goteo que crean profundidad y drama. Montada sobre base de piedra negra pulida.",
+    imagenes: ["imgs/IMG_5914.jpg"]
+  },
+  {
+    nombre: "Figura Femenina Recostada",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Arcilla / terracota",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de mujer desnuda recostada boca abajo, modelada en arcilla de color terracota rosado. El rostro, apoyado sobre las manos entrelazadas, muestra una expresión serena con ojos cerrados y cabello esbozado con incisiones lineales. Las formas son voluminosas y naturalistas. Pieza de carácter sensual y contemplativo.",
+    imagenes: ["imgs/IMG_5915.jpg"]
+  },
+  {
+    nombre: "Caballo de Cuero con Silla de Montar",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cuero sobre estructura interna, con silla y estribo metálico",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo a tamaño mediano recubierta íntegramente en cuero marrón cosido y moldeado. El animal está en posición de marcha con una pata delantera levantada. Porta silla de montar de cuero con cincha y estribo metálico funcional. El acabado envejecido y las costuras visibles dan fe del trabajo artesanal de alta calidad.",
+    imagenes: ["imgs/IMG_5918.jpg"]
+  },
+  {
+    nombre: "Caballo de Madera sobre Ruedas Rosadas",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada y pintada",
+    medida: "",
+    fecha: "",
+    descripcion: "Juguete antiguo de caballo de madera de perfil plano en madera oscura desgastada, montado sobre dos ruedas de madera con pintura rosa desvanecida. La forma del animal es esquemática y estilizada, de carácter popular y folk. El contraste entre la madera oscura del cuerpo y las ruedas rosadas le otorga una particular ingenuidad expresiva.",
+    imagenes: ["imgs/IMG_5919.jpg"]
+  },
+  {
+    nombre: "Assemblage con Billetes Venezolanos",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Técnica mixta",
+    material: "Madera tallada, billetes históricos venezolanos, arena y materiales mixtos",
+    medida: "",
+    fecha: "",
+    descripcion: "Objeto tridimensional de madera tallada y envejecida con dos ventanas enmarcadas dispuestas verticalmente. En cada ventana, composición que incorpora billetes venezolanos históricos de 1 bolívar, bandas de arena o tierra oscura y materiales de textura variada. Obra de arte conceptual que dialoga con la memoria histórica y económica de Venezuela.",
+    imagenes: ["imgs/IMG_5920.jpg"]
+  },
+  {
+    nombre: "Busto de Caballo en Resina Roja",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Resina",
+    medida: "",
+    fecha: "",
+    descripcion: "Busto de caballo en resina de color rojo vino oscuro, con crines trabajadas en detalle ondulado. Montado sobre peana cilíndrica del mismo material y color. El acabado es lustroso con sombras negras en las cavidades que acentúan los volúmenes del hocico, los ollares y la crin. Pieza decorativa de fuerte presencia.",
+    imagenes: ["imgs/IMG_5921.jpg"]
+  },
+  {
+    nombre: "Caballo de Madera Policromada con Guarniciones",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada con aplicaciones de latón y hierro",
+    medida: "",
+    fecha: "",
+    descripcion: "Caballo de madera tallado y pintado en rojo óxido desgastado, con aplicaciones metálicas de latón y hierro que conforman la silla de montar, la brida con cuentas y los ornamentos laterales. Estilo artesanal indio de tradición antigua. La pátina del tiempo es visible en toda la superficie, con descascarados que revelan capas de pintura anteriores.",
+    imagenes: ["imgs/IMG_5922.jpg"]
+  },
+  {
+    nombre: "Jinete en Alambre y Esferas de Metal",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Varillas y esferas de acero",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura minimalista y de ingenio construida con varillas de acero soldadas que forman un jinete esquemático montado sobre un caballo estilizado. Las extremidades del jinete y las pezuñas del caballo terminan en esferas metálicas plateadas. Pieza de diseño contemporáneo que sintetiza la figura ecuestre con economía de medios y sentido del humor.",
+    imagenes: ["imgs/IMG_5923.jpg"]
+  },
+  {
+    nombre: "Caballo Abstracto en Cerámica Negra",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica de barro negro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo de cuerpo redondeado y compacto en cerámica de barro negro pulido. La cabeza se eleva con el hocico apuntando al cielo en un gesto de libertad. Las patas son largas y estilizadas respecto al cuerpo, confiriéndole un carácter expresionista y contemporáneo. El acabado negro mate uniforme acentúa la pureza de la forma.",
+    imagenes: ["imgs/IMG_5925.jpg"]
+  },
+  {
+    nombre: "Busto de Caballo en Bronce Dorado",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Bronce pulido",
+    medida: "",
+    fecha: "",
+    descripcion: "Busto de caballo en bronce de alta pureza, con acabado brillante dorado y superficie altamente pulida que refleja el entorno. La ejecución es realista: crines onduladas, ollares abiertos y musculatura del cuello bien definida. Montado sobre peana cuadrada de madera oscura lacada. Pieza de gran elegancia y calidad de fundición.",
+    imagenes: ["imgs/IMG_5926.jpg"]
+  },
+  {
+    nombre: "Caballero Medieval con Espada",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica policromada con detalles en oro",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura cerámica policromada de un caballero armado montado sobre caballo encabritado. El jinete porta espada en alto y lleva casco coronado con remate dorado. La gualdrapa blanca del caballo está decorada con motivos florales azules y negros. La montura luce guarniciones doradas. Pieza de factura detallada y colorida, de carácter historicista.",
+    imagenes: ["imgs/IMG_5927.jpg"]
+  },
+  {
+    nombre: "Caballero Medieval con Manto Azul",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica policromada con detalles en oro",
+    medida: "",
+    fecha: "",
+    descripcion: "Caballero con armadura completa montado en caballo encabritado. El manto y la gualdrapa son de color azul pizarra con franjas rojas y fleurs-de-lis doradas. El jinete lleva corona dorada sobre el yelmo y porta un estandarte. Cerámica policromada de alta calidad con gran riqueza de detalles heráldicos. Contrapartida del caballero de manto blanco.",
+    imagenes: ["imgs/IMG_5929.jpg"]
+  },
+  {
+    nombre: "Colección de Cinco Caballos de Madera Policromada",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada y pintada con aplicaciones metálicas",
+    medida: "",
+    fecha: "",
+    descripcion: "Grupo de cinco figuras ecuestres artesanales de madera tallada y pintada en pigmentos múltiples: negro, azul-verde, rojo y marrón. Cada figura lleva guarniciones y sillas decoradas con motivos geométricos y pequeñas aplicaciones metálicas. Las diferencias de tamaño y color crean un conjunto variado y dinámico. Arte popular de tradición asiática, posiblemente india o afgana.",
+    imagenes: ["imgs/IMG_5930.jpg"]
+  },
+  {
+    nombre: "Caballo de Madera con Clavos y Ruedas",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada con clavos de hierro forjado",
+    medida: "",
+    fecha: "",
+    descripcion: "Caballo de madera maciza antigua color caoba oscuro, montado sobre dos ruedas de madera maciza. La crin está representada por una hilera de clavos de hierro forjado insertados en la cresta del cuello, detalle poco común que le confiere un carácter ritual. Una bisagra en el lomo sugiere que funciona como contenedor o joyero. Pieza de gran antigüedad y personalidad.",
+    imagenes: ["imgs/IMG_5931.jpg"]
+  },
+  {
+    nombre: "Caballo Estilizado — Elizabeth Gavotti",
+    artista: "Elizabeth Gavotti",
+    nacionalidad: "Venezolana",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Bronce patinado negro sobre base de mármol",
+    medida: "",
+    fecha: "1997",
+    descripcion: "Escultura de caballo de proporciones alargadas con patas rectas y verticales en bronce patinado negro. La superficie es rugosa y trabajada con una textura expresionista que da al material una cualidad casi pétrea. La placa en la base indica autoría y fecha: 'ELIZABETH GAVOTTI 97'. Montada sobre base de mármol beige veteado. Obra de artista venezolana.",
+    imagenes: ["imgs/IMG_5933.jpg"]
+  },
+  {
+    nombre: "Caballo de Patas Largas",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Metal patinado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de caballo de proporciones extremadamente estilizadas: cuerpo pequeño y compacto elevado sobre cuatro patas larguísimas y muy delgadas. Acabado en metal oscuro de bronce patinado negro. Montada sobre base plana rectangular. El lenguaje formal, de influencia giacomettiana, reduce la figura a su esencia, creando una poderosa tensión entre masa y vacío.",
+    imagenes: ["imgs/IMG_5934.jpg"]
+  },
+  {
+    nombre: "Figura Ecuestre Africana con Decoración Geométrica",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Bronce fundido",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de jinete y caballo en bronce fundido de color negro y marrón oscuro. El caballo se encabrita con las patas delanteras levantadas mientras el jinete sostiene una cadena. El cuerpo del caballo está decorado con patrones geométricos grabados. El estilo, expresivo y esquemático, es característico del arte tradicional africano de la región de Benín o Yoruba. Montada sobre base de hierro.",
+    imagenes: ["imgs/IMG_5935.jpg"]
+  },
+  {
+    nombre: "Jinete a Caballo, Estilo Tribal Africano",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Bronce fundido",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de jinete montado sobre caballo encabritado en bronce oscuro fundido. El jinete porta una lanza y está representado con formas esquemáticas y expresivas características del arte tribal africano. El conjunto, montado sobre soporte de metal, transmite dinamismo y fiereza. Pieza de marcada tradición artesanal africana.",
+    imagenes: ["imgs/IMG_5937.jpg"]
+  },
+  {
+    nombre: "Caballo de Cerámica Esmaltada en Azul y Blanco",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Cerámica esmaltada",
+    medida: "",
+    fecha: "",
+    descripcion: "Figura de caballo de cuerpo voluminoso y redondeado en cerámica esmaltada. El esmalte blanco sirve de fondo para motivos pintados en azul y verde: espirales, formas geométricas y franjas horizontales que recorren el cuerpo. La parte inferior permanece en barro sin esmaltar de color tierra cálido. Estética naif de fuerte personalidad decorativa.",
+    imagenes: ["imgs/IMG_5938.jpg"]
+  },
+  {
+    nombre: "Unicornio en Lapislázuli",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Lapislázuli tallado",
+    medida: "",
+    fecha: "",
+    descripcion: "Escultura de unicornio encabritado tallada en lapislázuli natural de alta calidad. El veteado del mineral combina azul intenso con inclusiones grises y blancas que dan profundidad y vida a la superficie pulida. El cuerno espiral corona la cabeza y la base es roca en bruto del mismo mineral, subrayando el origen natural de la pieza. Objeto de gran valor material y artesanal.",
+    imagenes: ["imgs/IMG_5939.jpg"]
+  },
+  {
+    nombre: "Caballo Dala Sueco (Dalahäst)",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Artesanía",
+    material: "Madera pintada y lacada",
+    medida: "",
+    fecha: "",
+    descripcion: "Figura tradicional sueca de caballo de madera conocida como Dalahäst, originaria de la región de Dalarna. Pintada en rojo anaranjado vivo y decorada con los típicos motivos florales del estilo kurbits en verde, blanco, rosa y amarillo, que recorren el cuello y los flancos. Acabado lacado brillante. Símbolo cultural de Suecia y objeto de artesanía popular de reconocimiento mundial.",
+    imagenes: ["imgs/IMG_5940.jpg"]
+  },
+  {
+    nombre: "Caballo Mecedora con Crines Naturales",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada, pintada y crin natural",
+    medida: "",
+    fecha: "",
+    descripcion: "Caballo mecedora de madera clara tallada y pintada con montura decorada en rojo, verde y blanco. Las crines y la cola son de crin natural color gris claro, lo que añade un realismo particular a la pieza. Montado sobre una estructura de balancín en madera con travesaños torneados. Acabado detallado y cuidado que lo sitúa entre el juguete artesanal y el objeto decorativo.",
+    imagenes: ["imgs/IMG_5941.jpg"]
+  },
+  {
+    nombre: "Caballo Encabritado de Madera Policromada",
+    artista: "",
+    nacionalidad: "",
+    coleccion: "",
+    tipo: "Escultura",
+    material: "Madera tallada y pintada",
+    medida: "",
+    fecha: "",
+    descripcion: "Pequeña figura de caballo encabritado tallada en madera y pintada con colores vivos de tradición popular. El cuerpo es de tono gris plateado envejecido; la montura, en burdeos y azul turquesa, lleva un detalle en amarillo ocre. La crin está tallada en negro. Las patas delanteras en alto y el rabo negro confieren dinamismo a la pieza. Estilo popular latinoamericano de carácter festivo.",
+    imagenes: ["imgs/IMG_5942.jpg"]
+  }
+];
+
+/* ================================================================
+   DATABASE — IndexedDB
+================================================================ */
+const DB_NAME    = 'repositorio-arte-v4';
+const DB_VERSION = 1;
+const STORE      = 'obras';
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE)) {
+        const store = d.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true });
+        store.createIndex('artista', 'artista', { unique: false });
+        store.createIndex('material', 'material', { unique: false });
+        store.createIndex('tipo', 'tipo', { unique: false });
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function txStore(mode = 'readonly') {
+  return db.transaction(STORE, mode).objectStore(STORE);
+}
+function dbGetAll() {
+  return new Promise((resolve, reject) => {
+    const req = txStore().getAll();
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+function dbAdd(obra) {
+  return new Promise((resolve, reject) => {
+    const req = txStore('readwrite').add(obra);
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+function dbPut(obra) {
+  return new Promise((resolve, reject) => {
+    const req = txStore('readwrite').put(obra);
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+function dbDelete(id) {
+  return new Promise((resolve, reject) => {
+    const req = txStore('readwrite').delete(id);
+    req.onsuccess = () => resolve();
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function getDeletedImgs() {
+  try { return new Set(JSON.parse(localStorage.getItem('deletedImgs') || '[]')); }
+  catch { return new Set(); }
+}
+function markImgDeleted(img) {
+  const set = getDeletedImgs();
+  set.add(img);
+  localStorage.setItem('deletedImgs', JSON.stringify([...set]));
+}
+
+async function seedIfEmpty() {
+  const existing = await dbGetAll();
+  const now = new Date().toISOString();
+  const deletedImgs = getDeletedImgs();
+  const seedMap = new Map(SEED_DATA.map(o => [(o.imagenes || [])[0], o]));
+
+  if (existing.length === 0) {
+    // Base vacía: cargar todo (salvo eliminadas)
+    for (const obra of SEED_DATA) {
+      const mainImg = (obra.imagenes || [])[0];
+      if (!deletedImgs.has(mainImg)) {
+        await dbAdd({ ...obra, creadoEn: now });
+      }
+    }
+  } else {
+    // Actualizar registros que aún digan "Sin título" con datos de SEED_DATA
+    for (const obra of existing) {
+      if (obra.nombre === 'Sin título') {
+        const mainImg = (obra.imagenes || [])[0];
+        const seed = mainImg && seedMap.get(mainImg);
+        if (seed) await dbPut({ ...obra, ...seed });
+      }
+    }
+    // Agregar obras nuevas del seed (respetando eliminadas)
+    const existingImgs = new Set(existing.flatMap(o => o.imagenes || []));
+    for (const obra of SEED_DATA) {
+      const mainImg = (obra.imagenes || [])[0];
+      if (mainImg && !existingImgs.has(mainImg) && !deletedImgs.has(mainImg)) {
+        await dbAdd({ ...obra, creadoEn: now });
+      }
+    }
+  }
+}
+
+/* ================================================================
+   STATE
+================================================================ */
+let allObras    = [];
+let currentObra = null;
+let pendingImgs = [];
+
+/* ================================================================
+   GALLERY
+================================================================ */
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    // Soporta formato "YYYY" o "YYYY-MM-DD"
+    return String(dateStr).split('-')[0];
+  } catch { return String(dateStr); }
+}
+
+function renderGallery(obras) {
+  const gallery    = document.getElementById('gallery');
+  const emptyState = document.getElementById('empty-state');
+  const countEl    = document.getElementById('obra-count');
+
+  [...gallery.querySelectorAll('.artwork-card')].forEach(c => c.remove());
+
+  countEl.textContent = obras.length === 0 ? '' : `${obras.length} obra${obras.length !== 1 ? 's' : ''}`;
+
+  if (obras.length === 0) {
+    emptyState.style.display = 'flex';
+    gallery.style.background = 'transparent';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  gallery.style.background = 'var(--gray-200)';
+
+  obras.forEach(obra => {
+    const card = document.createElement('div');
+    card.className = 'artwork-card';
+    card.dataset.id = obra.id;
+    const mainImg = obra.imagenes && obra.imagenes.length > 0 ? obra.imagenes[0] : null;
+
+    card.innerHTML = `
+      <div class="card-img-wrap">
+        ${mainImg
+          ? `<img src="${esc(mainImg)}" alt="${esc(obra.nombre)}" loading="lazy" />`
+          : `<span class="card-no-img">Sin imagen</span>`
+        }
+        <span class="card-type-badge">${esc(obra.tipo || '—')}</span>
+      </div>
+      <div class="card-info">
+        <p class="card-nombre">${esc(obra.nombre)}</p>
+        <div class="card-meta">
+          <span>${esc(obra.artista || 'Artista desconocido')}</span>
+          ${obra.material ? `<span>${esc(obra.material.split(' ')[0] + (obra.material.split(' ').length > 1 ? '…' : ''))}</span>` : ''}
+          ${obra.fecha ? `<span>${formatDate(obra.fecha)}</span>` : ''}
+        </div>
+      </div>`;
+
+    card.addEventListener('click', () => openDetailModal(obra));
+    gallery.appendChild(card);
+  });
+}
+
+/* ================================================================
+   FILTERS
+================================================================ */
+function updateFilterOptions() {
+  const materiales  = [...new Set(allObras.map(o => o.material).filter(Boolean))].sort();
+  const artistas    = [...new Set(allObras.map(o => o.artista).filter(Boolean))].sort();
+  const colecciones = [...new Set(allObras.map(o => o.coleccion).filter(Boolean))].sort();
+
+  const fMat = document.getElementById('f-material');
+  const fArt = document.getElementById('f-artista');
+  const fCol = document.getElementById('f-coleccion-filter');
+
+  fMat.innerHTML = `<option value="">Material — Todos</option>`
+    + materiales.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+
+  fArt.innerHTML = `<option value="">Artista — Todos</option>`
+    + artistas.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('');
+
+  fCol.innerHTML = `<option value="">Colección — Todas</option>`
+    + colecciones.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+}
+
+function getFiltered() {
+  const tipo      = document.getElementById('f-tipo').value;
+  const material  = document.getElementById('f-material').value;
+  const artista   = document.getElementById('f-artista').value;
+  const coleccion = document.getElementById('f-coleccion-filter').value;
+  const query     = document.getElementById('search-input').value.trim().toLowerCase();
+  return allObras.filter(o => {
+    if (tipo      && o.tipo      !== tipo)      return false;
+    if (material  && o.material  !== material)  return false;
+    if (artista   && o.artista   !== artista)   return false;
+    if (coleccion && o.coleccion !== coleccion) return false;
+    if (query) {
+      const haystack = [o.nombre, o.artista, o.material, o.tipo, o.coleccion, o.descripcion].filter(Boolean).join(' ').toLowerCase();
+      if (!haystack.includes(query)) return false;
+    }
+    return true;
+  });
+}
+
+function applyFilters() { renderGallery(getFiltered()); }
+
+['f-tipo','f-material','f-artista','f-coleccion-filter'].forEach(id => {
+  document.getElementById(id).addEventListener('change', applyFilters);
+});
+document.getElementById('search-input').addEventListener('input', applyFilters);
+document.getElementById('btn-reset-filters').addEventListener('click', () => {
+  ['f-tipo','f-material','f-artista','f-coleccion-filter'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('search-input').value = '';
+  applyFilters();
+});
+
+/* ================================================================
+   MODALS
+================================================================ */
+function openModal(id)  { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
+});
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m.id));
+});
+
+/* ================================================================
+   FORM MODAL
+================================================================ */
+function resetForm() {
+  ['obra-id','f-nombre','f-artista-input','f-nacionalidad','f-material-input','f-medida','f-fecha','f-coleccion','f-descripcion'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-tipo-input').value = '';
+  pendingImgs = [];
+  renderImgPreviews();
+}
+
+function openFormModal(obra = null) {
+  resetForm();
+  const isEdit = !!obra;
+  document.getElementById('form-modal-title').textContent = isEdit ? 'Editar Obra' : 'Nueva Obra';
+  document.getElementById('btn-delete-obra').style.display = isEdit ? '' : 'none';
+
+  if (isEdit) {
+    document.getElementById('obra-id').value          = obra.id;
+    document.getElementById('f-nombre').value         = obra.nombre        || '';
+    document.getElementById('f-artista-input').value  = obra.artista        || '';
+    document.getElementById('f-nacionalidad').value   = obra.nacionalidad   || '';
+    document.getElementById('f-coleccion').value      = obra.coleccion      || '';
+    document.getElementById('f-tipo-input').value     = obra.tipo           || '';
+    document.getElementById('f-material-input').value = obra.material       || '';
+    document.getElementById('f-medida').value         = obra.medida         || '';
+    document.getElementById('f-fecha').value          = obra.fecha          || '';
+    document.getElementById('f-descripcion').value    = obra.descripcion    || '';
+    pendingImgs = (obra.imagenes || []).map((url, i) => ({ dataUrl: url, name: `img-${i}` }));
+    renderImgPreviews();
+  }
+  openModal('modal-form');
+}
+
+document.getElementById('btn-nueva-obra').addEventListener('click', () => openFormModal());
+document.getElementById('btn-empty-add').addEventListener('click',  () => openFormModal());
+
+/* ── Image handling ── */
+document.getElementById('img-input').addEventListener('change', async e => {
+  const files = Array.from(e.target.files);
+  for (const file of files) {
+    const dataUrl = await fileToDataURL(file);
+    pendingImgs.push({ dataUrl, name: file.name });
+  }
+  renderImgPreviews();
+  e.target.value = '';
+});
+
+function fileToDataURL(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImgPreviews() {
+  const container = document.getElementById('img-previews');
+  container.innerHTML = '';
+  pendingImgs.forEach((img, idx) => {
+    const item = document.createElement('div');
+    item.className = 'img-preview-item';
+    item.innerHTML = `
+      <img src="${img.dataUrl}" alt="${esc(img.name)}" />
+      ${idx === 0 ? '<span class="img-main-badge">Principal</span>' : ''}
+      <button type="button" data-idx="${idx}" title="Eliminar imagen">×</button>`;
+    item.querySelector('button').addEventListener('click', () => {
+      pendingImgs.splice(idx, 1);
+      renderImgPreviews();
+    });
+    container.appendChild(item);
+  });
+}
+
+const uploadArea = document.getElementById('upload-area');
+uploadArea.addEventListener('dragover',  e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--black)'; });
+uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+uploadArea.addEventListener('drop', async e => {
+  e.preventDefault(); uploadArea.style.borderColor = '';
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  for (const file of files) { const d = await fileToDataURL(file); pendingImgs.push({ dataUrl: d, name: file.name }); }
+  renderImgPreviews();
+});
+
+/* ── Save ── */
+document.getElementById('btn-save-obra').addEventListener('click', async () => {
+  const nombre   = document.getElementById('f-nombre').value.trim();
+  const artista  = document.getElementById('f-artista-input').value.trim();
+  const tipo     = document.getElementById('f-tipo-input').value;
+  const material = document.getElementById('f-material-input').value.trim();
+
+  if (!nombre || !tipo || !material) {
+    showNotification('Completa los campos obligatorios *');
+    return;
+  }
+
+  const idVal  = document.getElementById('obra-id').value;
+  const isEdit = !!idVal;
+  const nacionalidad = document.getElementById('f-nacionalidad').value.trim();
+  const coleccion   = document.getElementById('f-coleccion').value.trim();
+  const obraData = {
+    nombre, artista, nacionalidad, coleccion, tipo, material,
+    medida:      document.getElementById('f-medida').value.trim(),
+    fecha:       document.getElementById('f-fecha').value,
+    descripcion: document.getElementById('f-descripcion').value.trim(),
+    imagenes:    pendingImgs.map(i => i.dataUrl),
+    creadoEn:    isEdit ? undefined : new Date().toISOString(),
+  };
+
+  if (isEdit) {
+    obraData.id = parseInt(idVal);
+    const orig = allObras.find(o => o.id === obraData.id);
+    if (orig) obraData.creadoEn = orig.creadoEn;
+    await dbPut(obraData);
+    showNotification('Obra actualizada');
+  } else {
+    await dbAdd(obraData);
+    showNotification('Obra registrada');
+  }
+  closeModal('modal-form');
+  await reloadData();
+});
+
+/* ── Delete ── */
+let obraToDelete = null;
+
+document.getElementById('btn-delete-obra').addEventListener('click', () => {
+  const idVal  = document.getElementById('obra-id').value;
+  const nombre = document.getElementById('f-nombre').value.trim();
+  obraToDelete = parseInt(idVal);
+  document.getElementById('confirm-obra-nombre').textContent = `"${nombre}"`;
+  openModal('modal-confirm');
+});
+
+document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
+  if (obraToDelete !== null) {
+    // Guardar imagen principal para no re-agregar en el futuro
+    const toDelete = allObras.find(o => o.id === obraToDelete);
+    if (toDelete) {
+      const mainImg = (toDelete.imagenes || [])[0];
+      if (mainImg) markImgDeleted(mainImg);
+    }
+    await dbDelete(obraToDelete);
+    obraToDelete = null;
+    closeModal('modal-confirm');
+    closeModal('modal-form');
+    closeModal('modal-detail');
+    showNotification('Obra eliminada');
+    await reloadData();
+  }
+});
+
+/* ================================================================
+   DETAIL MODAL
+================================================================ */
+function openDetailModal(obra) {
+  currentObra = obra;
+  document.getElementById('detail-header-nombre').textContent = obra.nombre;
+  document.getElementById('detail-tipo').textContent          = obra.tipo || '';
+  document.getElementById('detail-nombre').textContent        = obra.nombre;
+  document.getElementById('detail-artista').textContent       = obra.artista      || '—';
+  document.getElementById('detail-nacionalidad').textContent  = obra.nacionalidad || '—';
+  document.getElementById('detail-nacionalidad-wrap').style.display = obra.nacionalidad ? '' : 'none';
+  document.getElementById('detail-coleccion').textContent     = obra.coleccion    || '—';
+  document.getElementById('detail-coleccion-wrap').style.display    = obra.coleccion    ? '' : 'none';
+  document.getElementById('detail-material').textContent      = obra.material     || '—';
+  document.getElementById('detail-medida').textContent        = obra.medida   || '—';
+  document.getElementById('detail-fecha').textContent         = formatDate(obra.fecha);
+  document.getElementById('detail-descripcion').textContent   = obra.descripcion || '—';
+  document.getElementById('detail-desc-wrap').style.display   = obra.descripcion ? '' : 'none';
+
+  const imgs    = obra.imagenes || [];
+  const mainEl  = document.getElementById('detail-main-img');
+  const noImgEl = document.getElementById('detail-no-img');
+  const thumbEl = document.getElementById('detail-thumbs');
+
+  if (imgs.length > 0) {
+    mainEl.src = imgs[0];
+    mainEl.style.display = 'block';
+    noImgEl.style.display = 'none';
+    if (imgs.length > 1) {
+      thumbEl.style.display = 'flex';
+      thumbEl.innerHTML = imgs.map((src, i) =>
+        `<img class="detail-thumb${i===0?' active':''}" src="${esc(src)}" data-idx="${i}" alt="Imagen ${i+1}" />`
+      ).join('');
+      thumbEl.querySelectorAll('.detail-thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          mainEl.src = thumb.src;
+          thumbEl.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+      });
+    } else { thumbEl.style.display = 'none'; }
+  } else {
+    mainEl.style.display = 'none';
+    noImgEl.style.display = 'flex';
+    thumbEl.style.display = 'none';
+  }
+  openModal('modal-detail');
+}
+
+document.getElementById('btn-edit-from-detail').addEventListener('click', () => {
+  closeModal('modal-detail');
+  openFormModal(currentObra);
+});
+
+/* ================================================================
+   UTILS
+================================================================ */
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+let notifTimeout;
+function showNotification(msg) {
+  const el = document.getElementById('notification');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+async function reloadData() {
+  allObras = await dbGetAll();
+  updateFilterOptions();
+  applyFilters();
+}
+
+openDB()
+  .then(seedIfEmpty)
+  .then(reloadData)
+  .catch(err => {
+    console.error('Error DB:', err);
+    showNotification('Error al abrir la base de datos');
+  });
+</script>
+</body>
+</html>
